@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Students - GlobalPath</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+<body>
+    <main class="container">
+        <h1>Registered Students</h1>
+
+        <form method="GET" action="{{ url_for('admin_students') }}">
+            <label for="search">Search by student name or email:</label>
+
+            <input
+                type="text"
+                id="search"
+                name="search"
+                value="{{ search_text }}"
+                maxlength="100"
+                placeholder="Enter a name or email"
+            >
+
+            <button type="submit">Search</button>
+
+            <a href="{{ url_for('admin_students') }}">Clear</a>
+        </form>
+
+        <p>Students found: {{ students|length }}</p>
+
+        {% if students %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Student Name</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for student in students %}
+                        <tr>
+                            <td>{{ student["id"] }}</td>
+                            <td>{{ student["full_name"] }}</td>
+                            <td>{{ student["email"] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No students found.</p>
+        {% endif %}
+
+        <p>
+            <a href="{{ url_for('admin_dashboard') }}">
+                Back to Admin Dashboard
+            </a>
+        </p>
+    </main>
+</body>
+</html>

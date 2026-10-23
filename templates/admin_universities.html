@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Universities - GlobalPath</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <main class="dashboard-container">
+        <h1>Manage University Information</h1>
+
+        {% for university in universities %}
+            <div class="dashboard-card">
+                <h3>{{ university["name"] }}</h3>
+
+                <p>Country: {{ university["country"] }}</p>
+                <p>Course: {{ university["course"] }}</p>
+                <p>
+                    Verification:
+                    {{ university["verification_status"] }}
+                </p>
+
+                <a href="{{ url_for(
+                    'admin_verify_university',
+                    university_id=university['id']
+                ) }}">
+                    Edit and Verify Details
+                </a>
+            </div>
+        {% else %}
+            <p>No university records found. Add university records first.</p>
+        {% endfor %}
+
+        <p>
+            <a href="{{ url_for('admin_dashboard') }}">
+                Back to Admin Dashboard
+            </a>
+        </p>
+    </main>
+</body>
+</html>

@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Course | GlobalPath Admin</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #243247;
+            margin: 0;
+            padding: 25px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: auto;
+        }
+
+        .panel {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px #00000012;
+        }
+
+        h1 {
+            color: #123c69;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font: inherit;
+        }
+
+        textarea {
+            min-height: 85px;
+            resize: vertical;
+        }
+
+        button {
+            background: #1769aa;
+            color: white;
+            border: 0;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .notice {
+            background: #fff3cd;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .messages {
+            padding: 12px;
+            margin-bottom: 15px;
+            background: #eef2f7;
+            border-radius: 6px;
+        }
+
+        .help {
+            color: #58677a;
+            font-size: 13px;
+        }
+
+        a {
+            color: #1769aa;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <p><a href="{{ url_for('admin_dashboard') }}">
+        Back to Admin Dashboard
+    </a></p>
+
+    <div class="panel">
+        <h1>Add University Course</h1>
+
+        <p>
+            Add the details for one programme offered by a university.
+        </p>
+
+        <div class="notice">
+            New course records are saved as <strong>Unverified</strong>.
+            Check the university's official programme page before
+            presenting fees or eligibility as confirmed.
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="messages">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if universities %}
+
+        <form method="POST"
+              action="{{ url_for('admin_add_course') }}">
+
+            <input type="hidden" name="csrf_token"
+                   value="{{ csrf_token() }}">
+
+            <div class="field">
+                <label for="university_id">University *</label>
+
+                <select id="university_id" name="university_id" required>
+                    <option value="">Select a university</option>
+
+                    {% for university in universities %}
+                    <option value="{{ university['id'] }}">
+                        {{ university['name'] }}
+                        — {{ university['country'] }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="course_name">Course name *</label>
+                <input type="text" id="course_name"
+                       name="course_name" required
+                       placeholder="e.g. Computer Science">
+            </div>
+
+            <div class="field">
+                <label for="degree_level">Degree level *</label>
+                <select id="degree_level" name="degree_level" required>
+                    <option value="">Select degree level</option>
+                    <option value="Bachelor's">Bachelor's</option>
+                    <option value="Master's">Master's</option>
+                    <option value="PhD">PhD</option>
+                    <option value="Diploma">Diploma</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="annual_tuition">Annual tuition</label>
+                <input type="number" id="annual_tuition"
+                       name="annual_tuition" min="0"
+                       step="0.01" placeholder="Leave blank if unknown">
+            </div>
+
+            <div class="field">
+                <label for="tuition_currency">Tuition currency *</label>
+                <select id="tuition_currency"
+                        name="tuition_currency" required>
+                    <option value="INR">INR — Indian Rupee</option>
+                    <option value="USD">USD — US Dollar</option>
+                    <option value="GBP">GBP — British Pound</option>
+                    <option value="CAD">CAD — Canadian Dollar</option>
+                    <option value="AUD">AUD — Australian Dollar</option>
+                    <option value="EUR">EUR — Euro</option>
+                </select>
+                <p class="help">
+                    Select the currency used by the official university source.
+                </p>
+            </div>
+
+            <div class="field">
+                <label for="academic_year">Academic year</label>
+                <input type="text" id="academic_year"
+                       name="academic_year"
+                       placeholder="e.g. 2027–2028">
+            </div>
+
+            <div class="field">
+                <label for="course_duration">Course duration</label>
+                <input type="text" id="course_duration"
+                       name="course_duration"
+                       placeholder="e.g. 2 years">
+            </div>
+
+            <div class="field">
+                <label for="entry_requirements">
+                    Academic entry requirements
+                </label>
+                <textarea id="entry_requirements"
+                          name="entry_requirements"
+                          placeholder="Enter programme-specific requirements"></textarea>
+            </div>
+
+            <div class="field">
+                <label for="english_requirements">
+                    English-language requirements
+                </label>
+                <textarea id="english_requirements"
+                          name="english_requirements"
+                          placeholder="Enter official IELTS, TOEFL, or other requirements"></textarea>
+            </div>
+
+            <div class="field">
+                <label for="international_eligibility">
+                    International-student eligibility
+                </label>
+                <select id="international_eligibility"
+                        name="international_eligibility">
+                    <option value="Unconfirmed">Unconfirmed</option>
+                    <option value="Eligible">Eligible</option>
+                    <option value="Not eligible">Not eligible</option>
+                </select>
+                <p class="help">
+                    Leave as Unconfirmed unless eligibility has been checked
+                    for this specific programme.
+                </p>
+            </div>
+
+            <button type="submit">Save Course</button>
+        </form>
+
+        {% else %}
+            <p>
+                No universities are available. Add a university first
+                using the existing university administration feature.
+            </p>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>

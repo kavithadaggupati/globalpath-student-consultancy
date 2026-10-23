@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Course Applications | GlobalPath</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <h1>Manage Course Applications</h1>
+        <p>Review student applications and update their statuses.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <p class="flash-message {{ category }}">
+                        {{ message }}
+                    </p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if applications %}
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Application ID</th>
+                            <th>Student ID</th>
+                            <th>Course</th>
+                            <th>University</th>
+                            <th>Country</th>
+                            <th>Student Message</th>
+                            <th>Submitted</th>
+                            <th>Status</th>
+                            <th>Update Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in applications %}
+                            <tr>
+                                <td>{{ application['id'] }}</td>
+                                <td>{{ application['student_id'] }}</td>
+                                <td>
+                                    {{ application['course_name'] }}
+                                    <br>
+                                    <small>
+                                        {{ application['degree_level'] }}
+                                    </small>
+                                </td>
+                                <td>
+                                    {{ application['university_name'] }}
+                                </td>
+                                <td>
+                                    {{ application['university_country'] }}
+                                </td>
+                                <td>
+                                    {{ application['application_notes']
+                                       or 'No message provided' }}
+                                </td>
+                                <td>{{ application['created_at'] }}</td>
+                                <td>{{ application['status'] }}</td>
+                                <td>
+                                    <form method="POST"
+                                          action="{{ url_for(
+                                              'admin_update_course_application_status',
+                                              application_id=application['id']
+                                          ) }}">
+
+                                        <input type="hidden"
+                                               name="csrf_token"
+                                               value="{{ csrf_token() }}">
+
+                                        <select name="status" required>
+                                            <option value="Submitted"
+                                                {% if application['status'] == 'Submitted' %}
+                                                    selected
+                                                {% endif %}>
+                                                Submitted
+                                            </option>
+                                            <option value="Under Review"
+                                                {% if application['status'] == 'Under Review' %}
+                                                    selected
+                                                {% endif %}>
+                                                Under Review
+                                            </option>
+                                            <option value="Accepted"
+                                                {% if application['status'] == 'Accepted' %}
+                                                    selected
+                                                {% endif %}>
+                                                Accepted
+                                            </option>
+                                            <option value="Rejected"
+                                                {% if application['status'] == 'Rejected' %}
+                                                    selected
+                                                {% endif %}>
+                                                Rejected
+                                            </option>
+                                        </select>
+
+                                        <button type="submit">
+                                            Update
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>No course applications have been submitted yet.</p>
+        {% endif %}
+
+        <p>
+            <a href="{{ url_for('admin_dashboard') }}">
+                Back to Admin Dashboard
+            </a>
+        </p>
+    </main>
+</body>
+</html>

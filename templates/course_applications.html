@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply for a Course | GlobalPath</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <h1>Apply for a Course</h1>
+        <p>Select a course and tell us how we can assist you.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <p class="flash-message {{ category }}">
+                        {{ message }}
+                    </p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if courses %}
+            <form method="POST"
+                  action="{{ url_for('course_applications') }}">
+
+                <input type="hidden" name="csrf_token"
+                       value="{{ csrf_token() }}">
+
+                <label for="course_id">Choose a course:</label>
+                <select name="course_id" id="course_id" required>
+                    <option value="">Select a course</option>
+                    {% for course in courses %}
+                    <option value="{{ course['id'] }}"
+                     {% if course['id'] == selected_course_id %}selected{% endif %}
+                      {{ course['course_name'] }} - {{ course['university_name'] }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+                <label for="application_notes">
+                    Your message or counselling requirements:
+                </label>
+                <textarea id="application_notes"
+                          name="application_notes"
+                          rows="5"
+                          maxlength="2000"
+                          placeholder="Describe your study plans, preferred intake, or questions."></textarea>
+
+                <button type="submit">Submit Application</button>
+            </form>
+        {% else %}
+            <p>No courses are available at the moment.</p>
+            <p>Please check back later.</p>
+        {% endif %}
+
+        <p>
+            <a href="{{ url_for('courses') }}">Browse Courses</a>
+            |
+            <a href="{{ url_for('my_course_applications') }}">
+                My Applications
+            </a>
+            |
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        </p>
+    </main>
+</body>
+</html>

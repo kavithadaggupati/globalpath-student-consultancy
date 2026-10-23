@@ -1,0 +1,277 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Universities and Courses - GlobalPath</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .catalogue {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .filter-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .university-card {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 22px;
+            margin: 18px 0;
+            background: white;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+        }
+
+        .detail {
+            padding: 12px;
+            background: #f6f8fb;
+            border-radius: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 6px;
+            background: #fff0d4;
+            color: #714600;
+            font-weight: bold;
+        }
+
+        .verified {
+            background: #e0f5e8;
+            color: #176638;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, select, button {
+            max-width: 100%;
+            padding: 9px;
+        }
+    </style>
+</head>
+
+<body>
+<main class="catalogue">
+
+    <h1>University and Course Catalogue</h1>
+
+    <p>
+        Explore university programmes and review their published
+        admission and tuition information.
+    </p>
+
+    <form method="GET"
+          action="{{ url_for('universities') }}"
+          class="filter-form">
+
+        <div>
+            <label for="country">Country</label>
+            <select name="country" id="country">
+                <option value="">All countries</option>
+                {% for item in countries %}
+                    <option value="{{ item }}"
+                        {% if selected_country == item %}selected{% endif %}>
+                        {{ item }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="course">Course or subject</label>
+            <input type="text" name="course" id="course"
+                   value="{{ selected_course }}"
+                   maxlength="100"
+                   placeholder="Computer Science">
+        </div>
+
+        <div>
+            <label for="degree_level">Degree level</label>
+            <select name="degree_level" id="degree_level">
+                <option value="">All degree levels</option>
+                {% for item in degree_levels %}
+                    <option value="{{ item }}"
+                        {% if selected_degree == item %}selected{% endif %}>
+                        {{ item }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="max_tuition">Maximum annual tuition (INR)</label>
+            <input type="number" name="max_tuition" id="max_tuition"
+                   min="0" max="100000000"
+                   value="{{ selected_budget }}"
+                   placeholder="e.g. 1500000">
+        </div>
+
+        <div>
+            <label>&nbsp;</label>
+            <button type="submit">Search Universities</button>
+            <a href="{{ url_for('universities') }}">Clear</a>
+        </div>
+    </form>
+
+    <h2>Available Programmes</h2>
+
+    {% for university in universities %}
+        <article class="university-card">
+
+            <h3>{{ university["name"] }}</h3>
+
+            <p>
+                <strong>Country:</strong>
+                {{ university["country"] }}
+            </p>
+
+            {% if university["city"] %}
+                <p>
+                    <strong>City:</strong>
+                    {{ university["city"] }}
+                </p>
+            {% endif %}
+
+            <p>
+                <strong>Course:</strong>
+                {{ university["course"] }}
+            </p>
+
+            <p>
+                <strong>Degree:</strong>
+                {{ university["degree_level"] }}
+            </p>
+
+            <div class="details-grid">
+
+                <div class="detail">
+                    <strong>Annual tuition</strong>
+                    <p>
+                        {% if university["annual_tuition"] %}
+                            {{ "{:,}".format(university["annual_tuition"]) }}
+                            {{ university["tuition_currency"] or "INR" }}
+                        {% else %}
+                            Not provided
+                        {% endif %}
+                    </p>
+                    <small>
+                        Confirm the amount and academic year with the university.
+                    </small>
+                </div>
+
+                <div class="detail">
+                    <strong>Course duration</strong>
+                    <p>
+                        {{ university["course_duration"] or "Not verified" }}
+                    </p>
+                </div>
+
+                <div class="detail">
+                    <strong>Academic year</strong>
+                    <p>
+                        {{ university["academic_year"] or "Not specified" }}
+                    </p>
+                </div>
+
+                <div class="detail">
+                    <strong>International eligibility</strong>
+                    <p>
+                        {{ university["international_eligibility"] or "Unconfirmed" }}
+                    </p>
+                </div>
+
+                <div class="detail">
+                    <strong>Academic entry requirements</strong>
+                    <p>
+                        {{ university["entry_requirements"] or "Not provided" }}
+                    </p>
+                </div>
+
+                <div class="detail">
+                    <strong>English-language requirements</strong>
+                    <p>
+                        {{ university["english_requirements"] or "Not provided" }}
+                    </p>
+                </div>
+
+            </div>
+
+            <p>
+                <strong>Verification status:</strong>
+
+                {% if university["verification_status"] == "Verified" %}
+                    <span class="status verified">Verified</span>
+                {% else %}
+                    <span class="status">Unverified</span>
+                {% endif %}
+            </p>
+
+            {% if university["last_verified"] %}
+                <p>
+                    <strong>Last checked:</strong>
+                    {{ university["last_verified"] }}
+                </p>
+            {% endif %}
+
+            {% if university["source_url"] %}
+                <p>
+                    <a href="{{ university['source_url'] }}"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        View programme source
+                    </a>
+                </p>
+            {% endif %}
+
+            {% if university["official_website"] %}
+                <p>
+                    <a href="{{ university['official_website'] }}"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        University website
+                    </a>
+                </p>
+            {% endif %}
+
+            <p>
+                <small>
+                    Always confirm programme details, fees, admission
+                    requirements, and international eligibility with
+                    the university before applying.
+                </small>
+            </p>
+
+        </article>
+    {% else %}
+        <p>No universities match your search. Try different filters.</p>
+    {% endfor %}
+
+    <p>
+        <a href="{{ url_for('dashboard') }}">Back to Student Dashboard</a>
+    </p>
+
+</main>
+</body>
+</html>

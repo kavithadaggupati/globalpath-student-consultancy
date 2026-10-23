@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration | GlobalPath</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <a class="brand" href="{{ url_for('home') }}">GlobalPath</a>
+        <nav>
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('login') }}">Login</a>
+        </nav>
+    </header>
+
+    <main class="form-container">
+        <div class="form-card">
+            <h1>Create Your Account</h1>
+            <p>Begin your study abroad journey with GlobalPath.</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('register') }}">
+                <input type="hidden" name="csrf_token"
+                       value="{{ csrf_token() }}">
+
+                <label for="full_name">Full Name</label>
+                <input type="text" id="full_name" name="full_name"
+                       maxlength="100" autocomplete="name"
+                       placeholder="Enter your full name" required>
+
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email"
+                       maxlength="254" autocomplete="email"
+                       placeholder="Enter your email" required>
+
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password"
+                       minlength="8" maxlength="128"
+                       autocomplete="new-password"
+                       placeholder="At least 8 characters" required>
+
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" id="confirm_password"
+                       name="confirm_password"
+                       minlength="8" maxlength="128"
+                       autocomplete="new-password"
+                       placeholder="Re-enter your password" required>
+
+                <button class="button full-width" type="submit">
+                    Register
+                </button>
+            </form>
+
+            <p class="form-footer">
+                Already registered?
+                <a href="{{ url_for('login') }}">Log in here</a>
+            </p>
+        </div>
+    </main>
+</body>
+</html>

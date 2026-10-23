@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify University - GlobalPath</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <main class="dashboard-container">
+        <h1>University Course Details</h1>
+
+        <h2>{{ university["name"] }}</h2>
+        <p>Country: {{ university["country"] }}</p>
+        <p>Course: {{ university["course"] }}</p>
+        <p>Degree: {{ university["degree_level"] }}</p>
+
+        <form method="POST">
+            <input type="hidden" name="csrf_token"
+                   value="{{ csrf_token() }}">
+
+            <label for="city">City</label>
+            <input id="city" name="city"
+                   value="{{ university['city'] }}" maxlength="100">
+
+            <label for="tuition_currency">Tuition currency</label>
+            <input id="tuition_currency" name="tuition_currency"
+                   value="{{ university['tuition_currency'] }}"
+                   maxlength="3" placeholder="CAD, USD, GBP">
+
+            <label for="academic_year">Academic year</label>
+            <input id="academic_year" name="academic_year"
+                   value="{{ university['academic_year'] }}"
+                   placeholder="2026-2027" maxlength="20">
+
+            <label for="course_duration">Course duration</label>
+            <input id="course_duration" name="course_duration"
+                   value="{{ university['course_duration'] }}"
+                   placeholder="2 years" maxlength="100">
+
+            <label for="entry_requirements">Academic entry requirements</label>
+            <textarea id="entry_requirements" name="entry_requirements"
+                      maxlength="5000">{{ university['entry_requirements'] }}</textarea>
+
+            <label for="english_requirements">English-language requirements</label>
+            <textarea id="english_requirements" name="english_requirements"
+                      maxlength="2000">{{ university['english_requirements'] }}</textarea>
+
+            <label for="international_eligibility">
+                International-student eligibility
+            </label>
+            <select id="international_eligibility"
+                    name="international_eligibility">
+                {% for option in ["Unconfirmed", "Eligible", "Not eligible"] %}
+                    <option value="{{ option }}"
+                        {% if university['international_eligibility'] == option %}
+                            selected
+                        {% endif %}>
+                        {{ option }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label for="source_url">Official programme source URL</label>
+            <input type="url" id="source_url" name="source_url"
+                   value="{{ university['source_url'] }}"
+                   maxlength="1000"
+                   placeholder="https://official-university-website...">
+
+            <label for="verification_status">Verification status</label>
+            <select id="verification_status" name="verification_status">
+                {% for option in ["Unverified", "Verified"] %}
+                    <option value="{{ option }}"
+                        {% if university['verification_status'] == option %}
+                            selected
+                        {% endif %}>
+                        {{ option }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <p>
+                Only select Verified after checking the official source
+                and confirming the programme details.
+            </p>
+
+            <button type="submit">Save University Details</button>
+        </form>
+
+        <p>
+            <a href="{{ url_for('admin_universities') }}">
+                Back to University List
+            </a>
+        </p>
+    </main>
+</body>
+</html>

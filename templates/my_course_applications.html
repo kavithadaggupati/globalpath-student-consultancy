@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Course Applications | GlobalPath</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <h1>My Course Applications</h1>
+        <p>Track the courses you have applied for.</p>
+
+        {% if applications %}
+            {% for application in applications %}
+                <section class="application-card">
+                    <h2>{{ application['course_name'] }}</h2>
+
+                    <p>
+                        <strong>University:</strong>
+                        {{ application['university_name'] }}
+                    </p>
+
+                    <p>
+                        <strong>Country:</strong>
+                        {{ application['university_country'] }}
+                    </p>
+
+                    <p>
+                        <strong>Degree:</strong>
+                        {{ application['degree_level'] }}
+                    </p>
+
+                    <p>
+                        <strong>Application status:</strong>
+                        {{ application['status'] }}
+                    </p>
+
+                    <p>
+                        <strong>Course verification:</strong>
+                        {{ application['verification_status'] }}
+                    </p>
+
+                    <p>
+                        <strong>Submitted:</strong>
+                        {{ application['created_at'] }}
+                    </p>
+
+                    {% if application['application_notes'] %}
+                        <p>
+                            <strong>Your message:</strong>
+                            {{ application['application_notes'] }}
+                        </p>
+                    {% endif %}
+                </section>
+                <hr>
+            {% endfor %}
+        {% else %}
+            <p>You have not submitted any course applications yet.</p>
+        {% endif %}
+
+        <p>
+            <a href="{{ url_for('course_applications') }}">
+                Apply for Another Course
+            </a>
+            |
+            <a href="{{ url_for('courses') }}">Browse Courses</a>
+            |
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        </p>
+    </main>
+</body>
+</html>

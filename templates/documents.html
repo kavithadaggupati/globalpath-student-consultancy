@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Documents | GlobalPath</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <a class="brand" href="{{ url_for('home') }}">GlobalPath</a>
+        <nav>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('profile') }}">My Profile</a>
+            <a href="{{ url_for('consultancy') }}">Consultancy</a>
+            <a href="{{ url_for('documents') }}">My Documents</a>
+        </nav>
+    </header>
+
+    <main class="form-container">
+        <div class="form-card">
+            <h1>Upload Documents</h1>
+            <p>
+                Upload the documents needed for your
+                study-abroad application.
+            </p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endwith %}
+
+            <form method="POST"
+                  action="{{ url_for('documents') }}"
+                  enctype="multipart/form-data">
+
+                <input type="hidden"
+                       name="csrf_token"
+                       value="{{ csrf_token() }}">
+
+                <label for="document_type">Document Type</label>
+                <select id="document_type"
+                        name="document_type"
+                        required>
+                    <option value="">Select document type</option>
+                    {% for item in document_types %}
+                        <option value="{{ item }}">{{ item }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="document">Choose File</label>
+                <input id="document"
+                       name="document"
+                       type="file"
+                       accept=".pdf,.jpg,.jpeg,.png"
+                       required>
+
+                <p class="help-text">
+                    Accepted formats: PDF, JPG, JPEG, PNG.
+                    Maximum file size: 5 MB.
+                </p>
+
+                <button type="submit" class="button full-width">
+                    Upload Document
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <main class="dashboard-container">
+        <h2>My Uploaded Documents</h2>
+
+        {% if documents_list %}
+            <div class="cards">
+                {% for item in documents_list %}
+                    <article class="card">
+                        <h3>{{ item["document_type"] }}</h3>
+
+                        <p>
+                            <strong>Filename:</strong>
+                            {{ item["original_filename"] }}
+                        </p>
+
+                        <p>
+                            <strong>Uploaded:</strong>
+                            {{ item["uploaded_at"] }}
+                        </p>
+
+                        <a class="button"
+                           href="{{ url_for(
+                               'download_document',
+                               document_id=item['id']
+                           ) }}">
+                            Download Document
+                        </a>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>You have not uploaded any documents yet.</p>
+        {% endif %}
+    </main>
+</body>
+</html>

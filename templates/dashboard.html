@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard | GlobalPath</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <a class="brand" href="{{ url_for('home') }}">GlobalPath</a>
+        <nav>
+            <a href="{{ url_for('home') }}">Home</a>
+
+            <form method="POST" action="{{ url_for('logout') }}"
+                  class="inline-form">
+                <input type="hidden" name="csrf_token"
+                       value="{{ csrf_token() }}">
+                <button class="button" type="submit">Log Out</button>
+            </form>
+        </nav>
+    </header>
+
+    <main class="dashboard-container">
+        <div class="welcome-card">
+            <p class="eyebrow">STUDENT DASHBOARD</p>
+            <h1>Welcome, {{ student["full_name"] }}!</h1>
+            <p>
+                Your study abroad journey starts here.
+                Explore your options and prepare for your next academic step.
+            </p>
+            <p>
+                <strong>Registered email:</strong>
+                {{ student["email"] }}
+            </p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="message {{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <h2>Your Student Portal</h2>
+
+        <div class="cards">
+            <article class="card">
+                <h3>Explore Countries</h3>
+                <p>Discover international study destinations.</p>
+                <span class="status">Coming in Phase 3</span>
+            </article>
+
+            <article class="card">
+                <h3>Course Selection</h3>
+                <p>Find courses that match your interests.</p>
+                <span class="status">Coming in Phase 3</span>
+            </article>
+
+            <article class="card">
+                <h3>Book Counselling</h3>
+                <p>Request guidance from a study abroad consultant.</p>
+                <span class="status">Coming in Phase 4</span>
+            </article>
+            
+            <article class="card">
+                <h3>My Study Abroad Profile</h3>
+                <p>Add or update your academic qualifications,destination preferences, course, and budget.
+                </p>
+                <a class="button" href="{{ url_for('profile') }}">
+                    Complete Profile
+                </a>
+            </article>
+            <article class="card">
+                <h3>Consultancy and Appointments</h3>
+                <p>
+                    Request admission, course, university, visa, or scholarship guidance.
+                </p>
+                <a class="button" href="{{ url_for('consultancy') }}">
+                    Request Consultancy
+                </a>
+            </article>
+            <article class="card">
+                <h3>My Documents</h3>
+                <p>Upload and manage your passport, academic transcripts,certificates, and other study-abroad documents.
+                </p>
+                <a class="button" href="{{ url_for('documents') }}">
+                    Manage Documents
+                </a>
+            </article>
+            <article class="card">
+                <h3>My Notifications</h3>
+                <p>
+                    View appointment approvals, rejections,and other important updates.
+                </p>
+                <a class="button" href="{{ url_for('notifications') }}">
+                    View Notifications
+                </a>
+            </article>
+            <article class="card">
+                <h3>University Search</h3>
+                <p>
+                    Explore universities by country, course,degree level, and tuition budget.
+                </p>
+                <a class="button" href="{{ url_for('universities') }}">
+                    Find Universities
+                </a>
+            </article>
+
+        </div>
+    <section class="dashboard-container">
+        <h1>Student Dashboard</h1>
+         <p>
+            Welcome, {{ session.get('student_name', 'Student') }}!
+        </p>
+        <p>
+            Manage your study-abroad journey from one place.
+        </p>
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <h3>My Profile</h3>
+                <p>View and update your academic and personal details.</p>
+                <a href="{{ url_for('profile') }}">Manage Profile</a>
+            </div>
+            <div class="dashboard-card">
+                <h3>Consultancy Requests</h3>
+                <p>Submit and manage your consultancy requirements.</p>
+                <a href="{{ url_for('consultancy') }}">View Requests</a>
+            </div>
+            <div class="dashboard-card">
+                <h3>My Documents</h3>
+                <p>Upload and access your supporting documents.</p>
+                <a href="{{ url_for('documents') }}">Manage Documents</a>
+            </div>
+            <div class="dashboard-card">
+                <h3>Notifications</h3>
+                <p>Check updates about your consultancy requests.</p>
+                <a href="{{ url_for('notifications') }}">View Notifications</a>
+            </div>
+            <div class="dashboard-card">
+                <h3>Find Universities</h3>
+                <p>Search universities by country, course, and tuition budget.</p>
+                <a href="{{ url_for('universities') }}">Search Universities</a>
+            </div>
+        </div>
+    </section>
+  
+    <!-- Course Application Features -->
+    <section class="dashboard-section">
+        <h2>Study Abroad Applications</h2>
+         <p>
+            Explore available courses and submit an application for counselling assistance.
+         </p>
+         <div class="dashboard-actions">
+            <a href="{{ url_for('courses') }}" class="btn">
+                Browse Courses
+            </a>
+            <a href="{{ url_for('course_applications') }}" class="btn">
+                Apply for a Course
+            </a>
+            <a href="{{ url_for('my_course_applications') }}" class="btn">
+                Track My Application
+            </a>
+        </div>
+    </section>
+
+
+
+
+
+    </main>
+</body>
+</html>

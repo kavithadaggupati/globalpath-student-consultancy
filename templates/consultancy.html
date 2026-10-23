@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultancy | GlobalPath</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <a class="brand" href="{{ url_for('home') }}">GlobalPath</a>
+        <nav>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('profile') }}">My Profile</a>
+            <a href="{{ url_for('consultancy') }}">Consultancy</a>
+        </nav>
+    </header>
+
+    <main class="form-container">
+        <div class="form-card">
+            <h1>Request Consultancy</h1>
+            <p>
+                Choose a service and request a convenient
+                appointment with a consultant.
+            </p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endwith %}
+
+            <form method="POST"
+                  action="{{ url_for('consultancy') }}">
+
+                <input type="hidden"
+                       name="csrf_token"
+                       value="{{ csrf_token() }}">
+
+                <label for="service_type">Consultancy Service</label>
+                <select id="service_type"
+                        name="service_type" required>
+                    <option value="">Select a service</option>
+                    {% for service in service_types %}
+                        <option value="{{ service }}">
+                            {{ service }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <label for="appointment_date">Appointment Date</label>
+                <input type="date"
+                       id="appointment_date"
+                       name="appointment_date"
+                       min="{{ today }}"
+                       required>
+
+                <label for="appointment_time">Appointment Time</label>
+                <select id="appointment_time"
+                        name="appointment_time" required>
+                    <option value="">Select a time</option>
+                    {% for time in [
+                        "09:00", "10:00", "11:00", "12:00",
+                        "13:00", "14:00", "15:00", "16:00"
+                    ] %}
+                        <option value="{{ time }}">
+                            {{ time }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <p class="help-text">
+                    These are requested time slots. An appointment
+                    is not confirmed until a consultant approves it.
+                </p>
+
+                <label for="message">
+                    Message or Questions (Optional)
+                </label>
+                <textarea id="message"
+                          name="message"
+                          rows="4"
+                          maxlength="1000"
+                          placeholder="Tell us what guidance you need..."></textarea>
+
+                <button type="submit" class="button full-width">
+                    Submit Request
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <main class="dashboard-container">
+        <h2>My Consultancy Requests</h2>
+
+        {% if requests_list %}
+            <div class="cards">
+                {% for item in requests_list %}
+                    <article class="card">
+                        <h3>{{ item["service_type"] }}</h3>
+
+                        <p>
+                            <strong>Date:</strong>
+                            {{ item["appointment_date"] }}
+                        </p>
+
+                        <p>
+                            <strong>Time:</strong>
+                            {{ item["appointment_time"] }}
+                        </p>
+
+                        <p>
+                            <strong>Status:</strong>
+                            {{ item["status"] }}
+                        </p>
+
+                        {% if item["message"] %}
+                            <p>
+                                <strong>Your message:</strong>
+                                {{ item["message"] }}
+                            </p>
+                        {% endif %}
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>You have not submitted any consultancy requests yet.</p>
+        {% endif %}
+    </main>
+</body>
+</html>

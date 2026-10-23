@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications | GlobalPath</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <a class="brand" href="{{ url_for('home') }}">GlobalPath</a>
+
+        <nav>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('profile') }}">My Profile</a>
+            <a href="{{ url_for('consultancy') }}">Consultancy</a>
+            <a href="{{ url_for('documents') }}">My Documents</a>
+            <a href="{{ url_for('notifications') }}">Notifications</a>
+        </nav>
+    </header>
+
+    <main class="dashboard-container">
+        <h1>My Notifications</h1>
+
+        <p>
+            You have {{ unread_count }} unread notification(s).
+        </p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="message {{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        {% if notifications_list %}
+            <div class="cards">
+                {% for item in notifications_list %}
+                    <article class="card notification-card
+                        {% if not item['is_read'] %}unread{% endif %}">
+
+                        <h3>{{ item["title"] }}</h3>
+
+                        <p>{{ item["message"] }}</p>
+
+                        <p>
+                            <strong>Received:</strong>
+                            {{ item["created_at"] }}
+                        </p>
+
+                        {% if item["request_id"] %}
+                            <p>
+                                <strong>Request:</strong>
+                                #{{ item["request_id"] }}
+                            </p>
+                        {% endif %}
+
+                        <p>
+                            <strong>Status:</strong>
+                            {{ "Read" if item["is_read"] else "Unread" }}
+                        </p>
+
+                        {% if not item["is_read"] %}
+                            <form method="POST"
+                                  action="{{ url_for(
+                                      'mark_notification_read',
+                                      notification_id=item['id']
+                                  ) }}">
+                                <input type="hidden"
+                                       name="csrf_token"
+                                       value="{{ csrf_token() }}">
+
+                                <button type="submit" class="button">
+                                    Mark as Read
+                                </button>
+                            </form>
+                        {% endif %}
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>
+                You don't have any notifications yet.
+                Your appointment updates will appear here.
+            </p>
+        {% endif %}
+    </main>
+</body>
+</html>

@@ -1,0 +1,213 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Manage Courses | GlobalPath</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            padding: 24px;
+            color: #243247;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .card, .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 9px;
+            margin: 16px 0;
+            box-shadow: 0 2px 8px #00000012;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        input, select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 5px;
+        }
+
+        .button, button {
+            display: inline-block;
+            background: #1769aa;
+            color: white;
+            padding: 10px 14px;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .secondary {
+            background: #58677a;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        .verified {
+            color: #187344;
+        }
+
+        .unverified {
+            color: #9a5b00;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>Manage University Courses</h1>
+
+    <p>
+        <a href="{{ url_for('admin_dashboard') }}">
+            Back to Admin Dashboard
+        </a>
+    </p>
+
+    <p>
+        <a class="button" href="{{ url_for('admin_add_course') }}">
+            Add New Course
+        </a>
+    </p>
+
+    <form class="filters" method="GET"
+          action="{{ url_for('admin_courses') }}">
+
+        <div>
+            <label for="country">Country</label>
+            <select name="country" id="country">
+                <option value="">All countries</option>
+                {% for item in countries %}
+                <option value="{{ item }}"
+                    {% if selected_country == item %}selected{% endif %}>
+                    {{ item }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="course_name">Course name</label>
+            <input type="text" id="course_name"
+                   name="course_name"
+                   value="{{ selected_course }}"
+                   placeholder="Search course">
+        </div>
+
+        <div>
+            <label for="degree_level">Degree level</label>
+            <select name="degree_level" id="degree_level">
+                <option value="">All levels</option>
+                {% for item in degree_levels %}
+                <option value="{{ item }}"
+                    {% if selected_degree == item %}selected{% endif %}>
+                    {{ item }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="verification_status">Verification</label>
+            <select name="verification_status"
+                    id="verification_status">
+                <option value="">All statuses</option>
+                <option value="Verified"
+                    {% if selected_status == 'Verified' %}selected{% endif %}>
+                    Verified
+                </option>
+                <option value="Unverified"
+                    {% if selected_status == 'Unverified' %}selected{% endif %}>
+                    Unverified
+                </option>
+            </select>
+        </div>
+
+        <div style="align-self:end;">
+            <button type="submit">Filter Courses</button>
+            <a class="button secondary"
+               href="{{ url_for('admin_courses') }}">Clear</a>
+        </div>
+    </form>
+
+    <h2>Courses Found: {{ courses|length }}</h2>
+
+    {% if courses %}
+        {% for course in courses %}
+        <div class="card">
+            <h2>{{ course["course_name"] }}</h2>
+
+            <p>
+                <strong>University:</strong>
+                {{ course["university_name"] }}
+            </p>
+
+            <p>
+                <strong>Country:</strong>
+                {{ course["university_country"] }}
+            </p>
+
+            <p>
+                <strong>Degree:</strong>
+                {{ course["degree_level"] }}
+            </p>
+
+            <p>
+                <strong>Annual tuition:</strong>
+                {% if course["annual_tuition"] is not none %}
+                    {{ course["tuition_currency"] }}
+                    {{ "{:,.2f}".format(course["annual_tuition"]) }}
+                {% else %}
+                    Not provided
+                {% endif %}
+            </p>
+
+            <p>
+                <strong>Verification:</strong>
+                {% if course["verification_status"] == "Verified" %}
+                    <span class="status verified">Verified</span>
+                {% else %}
+                    <span class="status unverified">Unverified</span>
+                {% endif %}
+            </p>
+
+            <a class="button"
+               href="{{ url_for('admin_edit_course',
+                                course_id=course['id']) }}">
+                Edit / Verify Course
+            </a>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="card">
+            <p>No courses match your filters.</p>
+        </div>
+    {% endif %}
+
+</div>
+</body>
+</html>

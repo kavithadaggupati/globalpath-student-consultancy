@@ -1,0 +1,70 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultancy Requests - GlobalPath</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+<body>
+    <main class="container">
+        <h1>Consultancy Requests</h1>
+
+        <form method="GET" action="{{ url_for('admin_filtered_requests') }}">
+            <label for="status">Filter by status:</label>
+
+            <select name="status" id="status">
+                <option value="">All Requests</option>
+
+                {% for item in statuses %}
+                    <option
+                        value="{{ item }}"
+                        {% if selected_status == item %}selected{% endif %}
+                    >
+                        {{ item }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button type="submit">Filter</button>
+        </form>
+
+        {% if requests_list %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Student</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in requests_list %}
+                        <tr>
+                            <td>{{ item["id"] }}</td>
+                            <td>{{ item["student_name"] }}</td>
+                            <td>{{ item["student_email"] }}</td>
+                            <td>{{ item["status"] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No consultancy requests match this filter.</p>
+        {% endif %}
+
+        <p>
+            <a href="{{ url_for('admin_dashboard') }}">
+                Back to Admin Dashboard
+            </a>
+        </p>
+    </main>
+</body>
+</html>

@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlobalPath | Study Abroad Consultancy</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <a class="brand" href="{{ url_for('home') }}">GlobalPath</a>
+        <nav>
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="#destinations">Destinations</a>
+            <a href="#services">Services</a>
+
+            {% if session.get("student_id") %}
+                <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('register') }}">Register</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main class="hero">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="message {{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <p class="eyebrow">YOUR FUTURE, OUR GUIDANCE</p>
+        <h1>Start Your Study Abroad Journey</h1>
+        <p>
+            Discover universities, explore international study options,
+            and get guidance for your next academic step.
+        </p>
+
+        {% if session.get("student_id") %}
+            <a class="button" href="{{ url_for('dashboard') }}">
+                Open Student Dashboard
+            </a>
+        {% else %}
+            <a class="button" href="{{ url_for('register') }}">
+                Create Student Account
+            </a>
+            <a class="button secondary-button"
+               href="{{ url_for('login') }}">Log In</a>
+        {% endif %}
+    </main>
+
+    <section id="destinations">
+        <h2>Popular Study Destinations</h2>
+        <div class="cards">
+            <article class="card">
+                <h3>United States</h3>
+                <p>Explore undergraduate and postgraduate programs.</p>
+            </article>
+            <article class="card">
+                <h3>United Kingdom</h3>
+                <p>Discover universities and international courses.</p>
+            </article>
+            <article class="card">
+                <h3>Australia</h3>
+                <p>Learn about study options and admissions.</p>
+            </article>
+        </div>
+    </section>
+
+    <section id="services">
+        <h2>Our Consultancy Services</h2>
+        <div class="cards">
+            <article class="card">
+                <h3>Course Selection</h3>
+                <p>Find programs suited to your academic interests.</p>
+            </article>
+            <article class="card">
+                <h3>University Guidance</h3>
+                <p>Understand entry requirements and application steps.</p>
+            </article>
+            <article class="card">
+                <h3>Application Support</h3>
+                <p>Get guidance on preparing university applications.</p>
+            </article>
+        </div>
+    </section>
+
+    <footer>
+        <p>GlobalPath Study Abroad Consultancy — Student Project</p>
+    </footer>
+</body>
+</html>

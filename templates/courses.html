@@ -1,0 +1,312 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Find University Courses | GlobalPath</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 24px;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #243247;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .header {
+            background: #123c69;
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .header a {
+            color: white;
+        }
+
+        .filters, .course-card {
+            background: white;
+            padding: 22px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px #00000012;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit, minmax(180px, 1fr)
+            );
+            gap: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+        }
+
+        button, .button {
+            display: inline-block;
+            background: #1769aa;
+            color: white;
+            padding: 11px 15px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .secondary {
+            background: #58677a;
+        }
+
+        .course-card h2 {
+            color: #123c69;
+            margin-top: 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .verified {
+            background: #d9f5e5;
+            color: #17653b;
+        }
+
+        .unverified {
+            background: #fff0cc;
+            color: #805000;
+        }
+
+        .notice {
+            background: #eaf2fb;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 14px 0;
+        }
+
+        .muted {
+            color: #58677a;
+        }
+
+        .details p {
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header class="header">
+        <h1>GlobalPath University Courses</h1>
+        <p>
+            Explore courses and compare programme information
+            before applying.
+        </p>
+        <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+        
+    </header>
+
+    <form class="filters" method="GET"
+          action="{{ url_for('courses') }}">
+
+        <div>
+            <label for="country">Country</label>
+            <select name="country" id="country">
+                <option value="">All countries</option>
+                {% for item in countries %}
+                <option value="{{ item }}"
+                    {% if selected_country == item %}selected{% endif %}>
+                    {{ item }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="course_name">Course name</label>
+            <input type="text" id="course_name"
+                   name="course_name"
+                   value="{{ selected_course }}"
+                   placeholder="e.g. Computer Science">
+        </div>
+
+        <div>
+            <label for="degree_level">Degree level</label>
+            <select name="degree_level" id="degree_level">
+                <option value="">All levels</option>
+                {% for item in degree_levels %}
+                <option value="{{ item }}"
+                    {% if selected_degree == item %}selected{% endif %}>
+                    {{ item }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="verification_status">Verification status</label>
+            <select name="verification_status"
+                    id="verification_status">
+                <option value="">All statuses</option>
+                <option value="Verified"
+                    {% if selected_status == 'Verified' %}selected{% endif %}>
+                    Verified only
+                </option>
+                <option value="Unverified"
+                    {% if selected_status == 'Unverified' %}selected{% endif %}>
+                    Unverified only
+                </option>
+            </select>
+        </div>
+
+        <div style="align-self:end;">
+            <button type="submit">Search Courses</button>
+            <a class="button secondary"
+               href="{{ url_for('courses') }}">Clear</a>
+        </div>
+
+    </form>
+
+    <h2>Course Results ({{ courses|length }})</h2>
+
+    {% if courses %}
+        {% for course in courses %}
+        <article class="course-card">
+
+            <h2>{{ course["course_name"] }}</h2>
+
+            <div class="details">
+                <p>
+                    <strong>University:</strong>
+                    {{ course["university_name"] }}
+                </p>
+
+                <p>
+                    <strong>Country:</strong>
+                    {{ course["university_country"] }}
+                </p>
+
+                <p>
+                    <strong>Degree level:</strong>
+                    {{ course["degree_level"] }}
+                </p>
+
+                <p>
+                    <strong>Annual tuition:</strong>
+                    {% if course["annual_tuition"] is not none %}
+                        {{ course["tuition_currency"] }}
+                        {{ "{:,.2f}".format(course["annual_tuition"]) }}
+                    {% else %}
+                        Not provided
+                    {% endif %}
+                </p>
+
+                <p>
+                    <strong>Duration:</strong>
+                    {{ course["course_duration"] or "Not provided" }}
+                </p>
+
+                <p>
+                    <strong>Academic year:</strong>
+                    {{ course["academic_year"] or "Not provided" }}
+                </p>
+
+                <p>
+                    <strong>Academic entry requirements:</strong>
+                    {{ course["entry_requirements"] or "Not provided" }}
+                </p>
+
+                <p>
+                    <strong>English-language requirements:</strong>
+                    {{ course["english_requirements"] or "Not provided" }}
+                </p>
+
+                <p>
+                    <strong>International-student eligibility:</strong>
+                    {{ course["international_eligibility"] }}
+                </p>
+                <a href="{{ url_for('course_applications', course_id=course['id']) }}">
+                    Apply for This Course / Request Counselling
+                </a> 
+            </div>
+
+            {% if course["verification_status"] == "Verified" %}
+                <span class="badge verified">
+                    Verified by administrator
+                </span>
+            {% else %}
+                <span class="badge unverified">
+                    Unverified information
+                </span>
+            {% endif %}
+
+            {% if course["last_verified"] %}
+            <p>
+                <strong>Last verified:</strong>
+                {{ course["last_verified"] }}
+            </p>
+            {% endif %}
+
+            {% if course["verification_status"] != "Verified" %}
+            <div class="notice">
+                Details have not been verified. Confirm tuition,
+                entry requirements, duration, and eligibility with
+                the university before applying.
+            </div>
+            {% endif %}
+
+            {% if course["source_url"] %}
+            <p>
+                <a href="{{ course['source_url'] }}"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    View programme source
+                </a>
+            </p>
+            {% endif %}
+
+        </article>
+        {% endfor %}
+
+    {% else %}
+        <div class="course-card">
+            <h3>No matching courses found</h3>
+            <p class="muted">
+                Try changing the filters, or check whether your
+                administrator has added course records.
+            </p>
+        </div>
+    {% endif %}
+
+</div>
+</body>
+</html>
